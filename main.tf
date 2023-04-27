@@ -2,16 +2,16 @@ locals {
   ingress_rules = concat([
     {
       protocol = "tcp"
-      from_port = 0
-      to_port = 0
+      from_port   = 20200
+      to_port     = 20200
       cidr_blocks = null
       security_groups = null
       self = true
     },
   ],[for r in var.ingress_rules : {
     protocol = lookup(r,"protocol","tcp")
-    from_port = lookup(r,"port",0)
-    to_port = lookup(r,"port",0)
+    from_port = lookup(r,"port",20200)
+    to_port = lookup(r,"port",20200)
     cidr_blocks = lookup(r,"cidr_blocks",null)
     security_groups = lookup(r,"security_groups",null)
     self = false
@@ -20,15 +20,15 @@ locals {
   egress_rules = concat([
     {
       protocol    = "tcp"
-      from_port   = 0
-      to_port     = 0
-      cidr_blocks = ["0.0.0.0/0"]
+      from_port   = 20200
+      to_port     = 20200
+      cidr_blocks = ["10.0.0.0/8"]
       security_groups = null
     }
   ],[for r in var.egress_rules : {
     protocol = lookup(r,"protocol","tcp")
-    from_port = lookup(r,"port",0)
-    to_port = lookup(r,"port",0)
+    from_port = lookup(r,"port",20200)
+    to_port = lookup(r,"port",20200)
     cidr_blocks = lookup(r,"cidr_blocks",null)
     security_groups = lookup(r,"security_groups",null)
   }])
