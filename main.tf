@@ -4,7 +4,7 @@ locals {
       protocol = 6
       from_port   = 20200
       to_port     = 20200
-      cidr_blocks = null
+      cidr_blocks = "0.0.0.0/0"
       security_groups = null
       self = true
     },
@@ -22,7 +22,7 @@ locals {
       protocol    = 6
       from_port   = 20200
       to_port     = 20200
-      cidr_blocks = ["10.0.0.0/8"]
+      cidr_blocks = "0.0.0.0/0"
       security_groups = null
     }
   ],[for r in var.egress_rules : {
@@ -45,7 +45,7 @@ resource "oci_core_network_security_group_security_rule" "ocisecuritygroupingres
   network_security_group_id = oci_core_network_security_group.ocisecuritygroup.id
   direction                 = "INGRESS"
   protocol                  = local.ingress_rules[count.index].protocol
-  source                    = local.ingress_rules[count.index,1].cidr_blocks
+  source                    = local.ingress_rules[count.index].cidr_blocks
   source_type               = "CIDR_BLOCK"
   stateless                 = false
   tcp_options {
@@ -65,7 +65,7 @@ resource "oci_core_network_security_group_security_rule" "ocisecuritygroupegress
   network_security_group_id = oci_core_network_security_group.ocisecuritygroup.id
   direction                 = "INGRESS"
   protocol                  = local.ingress_rules[count.index].protocol
-  source                    = local.ingress_rules[count.index,1].cidr_blocks
+  source                    = local.ingress_rules[count.index].cidr_blocks
   source_type               = "CIDR_BLOCK"
   stateless                 = false
   }
