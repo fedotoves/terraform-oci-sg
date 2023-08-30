@@ -45,7 +45,7 @@ resource "oci_core_network_security_group_security_rule" "ocisecuritygroupingres
   network_security_group_id = oci_core_network_security_group.ocisecuritygroup.id
   direction                 = "INGRESS"
   protocol                  = local.ingress_rules[count.index].protocol
-  source                    = local.ingress_rules[count.index].cidr_blocks
+  source                    = local.ingress_rules[count.index].cidr_blocks[count.index]
   source_type               = "CIDR_BLOCK"
   stateless                 = false
   tcp_options {
@@ -65,7 +65,7 @@ resource "oci_core_network_security_group_security_rule" "ocisecuritygroupegress
   network_security_group_id = oci_core_network_security_group.ocisecuritygroup.id
   direction                 = "INGRESS"
   protocol                  = local.ingress_rules[count.index].protocol
-  source                    = local.ingress_rules[count.index].cidr_blocks
+  source                    = local.ingress_rules[count.index].cidr_blocks[count.index]
   source_type               = "CIDR_BLOCK"
   stateless                 = false
   }
