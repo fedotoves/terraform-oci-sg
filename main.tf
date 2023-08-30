@@ -1,5 +1,5 @@
 locals {
-  ingress_rules = concat([
+  ingress_rules1 = concat([
     {
       protocol = 6
       from_port   = 20200
@@ -17,7 +17,7 @@ locals {
     self = false
   }])
 
-  egress_rules = concat([
+  egress_rules1 = concat([
     {
       protocol    = 6
       from_port   = 20200
@@ -32,6 +32,26 @@ locals {
     cidr_blocks = lookup(r,"cidr_blocks",null)
     security_groups = lookup(r,"security_groups",null)
   }])
+
+  ingress_rules =
+    {
+      protocol = 6
+      from_port   = 20200
+      to_port     = 20200
+      cidr_blocks = "0.0.0.0/0"
+      security_groups = null
+      self = true
+    }
+
+  egress_rules =
+    {
+      protocol    = 6
+      from_port   = 20200
+      to_port     = 20200
+      cidr_blocks = "0.0.0.0/0"
+      security_groups = null
+    }
+
 }
 
 resource "oci_core_network_security_group" "ocisecuritygroup" {
@@ -45,7 +65,7 @@ resource "oci_core_network_security_group_security_rule" "ocisecuritygroupingres
   network_security_group_id = oci_core_network_security_group.ocisecuritygroup.id
   direction                 = "INGRESS"
   protocol                  = local.ingress_rules[count.index].protocol
-  source                    = local.ingress_rules[count.index].cidr_blocks[count.index]
+  source                    = local.ingress_rules[count.index].cidr_blocks
   source_type               = "CIDR_BLOCK"
   stateless                 = false
   tcp_options {
@@ -65,7 +85,7 @@ resource "oci_core_network_security_group_security_rule" "ocisecuritygroupegress
   network_security_group_id = oci_core_network_security_group.ocisecuritygroup.id
   direction                 = "INGRESS"
   protocol                  = local.ingress_rules[count.index].protocol
-  source                    = local.ingress_rules[count.index].cidr_blocks[count.index]
+  source                    = local.ingress_rules[count.index].cidr_blocks
   source_type               = "CIDR_BLOCK"
   stateless                 = false
   }
