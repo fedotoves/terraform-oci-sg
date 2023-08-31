@@ -1,41 +1,24 @@
 locals {
-  ingress_rules = concat([
-    {
-      protocol        = 6
-      from_port       = 0
-      to_port         = 20200
-      cidr_blocks     = "0.0.0.0/0"
-      security_groups = null
-      self            = true
-    },
-    ], [
+  ingress_rules = tomap(concat([
     for r in var.ingress_rules : {
       protocol        = lookup(r, "protocol", 6)
       from_port       = lookup(r, "port", 0)
       to_port         = lookup(r, "port", 20200)
-      cidr_blocks     = lookup(r, "cidr_blocks", null)
+      cidr_blocks     = lookup(r, "cidr_blocks", "0.0.0.0/0")
       security_groups = lookup(r, "security_groups", null)
       self            = false
     }
-  ])
+  ]))
 
-  egress_rules = concat([
-    {
-      protocol        = 6
-      from_port       = 0
-      to_port         = 20200
-      cidr_blocks     = "0.0.0.0/0"
-      security_groups = null
-    }
-    ], [
+  egress_rules = tomap(concat([
     for r in var.egress_rules : {
       protocol        = lookup(r, "protocol", 6)
       from_port       = lookup(r, "port", 0)
       to_port         = lookup(r, "port", 20200)
-      cidr_blocks     = lookup(r, "cidr_blocks", null)
+      cidr_blocks     = lookup(r, "cidr_blocks", "0.0.0.0/0")
       security_groups = lookup(r, "security_groups", null)
     }
-  ])
+  ]))
 }
 
 resource "oci_core_network_security_group" "ocisecuritygroup" {
