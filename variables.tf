@@ -1,16 +1,16 @@
 variable "display_name" {
   default = "Security Rules"
-  type = string
+  type    = string
 }
 
 variable "description" {
   default = "Security Rules for the VCN"
-  type = string
+  type    = string
 }
 
 variable "compartment_id" {
   default = "ocid1.tenancy.oc1..aaaaaaaakumtdvn73ytm5xuoo4fryo3h55jxurqh4nkvhjtca3qbyw5ih2la"
-  type = string
+  type    = string
 }
 
 variable "vcn_id" {
@@ -18,13 +18,13 @@ variable "vcn_id" {
 }
 
 variable "ingress_rules" {
-  default = []
+  default     = []
   description = "A list of custom ingress rules to apply"
-  type = any
+  type        = any
 }
 
 variable "egress_rules" {
-  default = []
+  default     = []
   description = "A list of custom egress rules to apply"
-  type = any
+  type        = any
 }

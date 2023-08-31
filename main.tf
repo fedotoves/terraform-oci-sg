@@ -1,57 +1,41 @@
 locals {
-  ingress_rules1 = concat([
+  ingress_rules = concat([
     {
-      protocol = 6
-      from_port   = 20200
-      to_port     = 20200
-      cidr_blocks = "0.0.0.0/0"
+      protocol        = 6
+      from_port       = 0
+      to_port         = 20200
+      cidr_blocks     = "0.0.0.0/0"
       security_groups = null
-      self = true
+      self            = true
     },
-  ],[for r in var.ingress_rules : {
-    protocol = lookup(r,"protocol",6)
-    from_port = lookup(r,"port",20200)
-    to_port = lookup(r,"port",20200)
-    cidr_blocks = lookup(r,"cidr_blocks",null)
-    security_groups = lookup(r,"security_groups",null)
-    self = false
-  }])
+    ], [
+    for r in var.ingress_rules : {
+      protocol        = lookup(r, "protocol", 6)
+      from_port       = lookup(r, "port", 0)
+      to_port         = lookup(r, "port", 20200)
+      cidr_blocks     = lookup(r, "cidr_blocks", null)
+      security_groups = lookup(r, "security_groups", null)
+      self            = false
+    }
+  ])
 
-  egress_rules1 = concat([
+  egress_rules = concat([
     {
-      protocol    = 6
-      from_port   = 20200
-      to_port     = 20200
-      cidr_blocks = "0.0.0.0/0"
+      protocol        = 6
+      from_port       = 0
+      to_port         = 20200
+      cidr_blocks     = "0.0.0.0/0"
       security_groups = null
     }
-  ],[for r in var.egress_rules : {
-    protocol = lookup(r,"protocol",6)
-    from_port = lookup(r,"port",20200)
-    to_port = lookup(r,"port",20200)
-    cidr_blocks = lookup(r,"cidr_blocks",null)
-    security_groups = lookup(r,"security_groups",null)
-  }])
-
-  ingress_rules =
-    {
-      protocol = 6
-      from_port   = 20200
-      to_port     = 20200
-      cidr_blocks = "0.0.0.0/0"
-      security_groups = null
-      self = true
+    ], [
+    for r in var.egress_rules : {
+      protocol        = lookup(r, "protocol", 6)
+      from_port       = lookup(r, "port", 0)
+      to_port         = lookup(r, "port", 20200)
+      cidr_blocks     = lookup(r, "cidr_blocks", null)
+      security_groups = lookup(r, "security_groups", null)
     }
-
-  egress_rules =
-    {
-      protocol    = 6
-      from_port   = 20200
-      to_port     = 20200
-      cidr_blocks = "0.0.0.0/0"
-      security_groups = null
-    }
-
+  ])
 }
 
 resource "oci_core_network_security_group" "ocisecuritygroup" {
@@ -61,31 +45,41 @@ resource "oci_core_network_security_group" "ocisecuritygroup" {
 }
 
 resource "oci_core_network_security_group_security_rule" "ocisecuritygroupingress" {
-  count = length(local.ingress_rules)
+  for_each                  = var.ingress_rules
   network_security_group_id = oci_core_network_security_group.ocisecuritygroup.id
   direction                 = "INGRESS"
-  protocol                  = local.ingress_rules[count.index].protocol
-  source                    = local.ingress_rules[count.index].cidr_blocks
+  protocol                  = each.value.protocol
+  source                    = each.value.cidr_blocks
   source_type               = "CIDR_BLOCK"
   stateless                 = false
   tcp_options {
     destination_port_range {
-      max = local.ingress_rules[count.index].to_port
-      min = local.ingress_rules[count.index].from_port
+      max = each.value.to_port
+      min = each.value.from_port
     }
     source_port_range {
-      max = local.ingress_rules[count.index].to_port
-      min = local.ingress_rules[count.index].from_port
+      max = each.value.to_port
+      min = each.value.from_port
     }
   }
 }
 
 resource "oci_core_network_security_group_security_rule" "ocisecuritygroupegress" {
-  count = length(local.ingress_rules)
+  for_each                  = var.egress_rules
   network_security_group_id = oci_core_network_security_group.ocisecuritygroup.id
-  direction                 = "INGRESS"
-  protocol                  = local.ingress_rules[count.index].protocol
-  source                    = local.ingress_rules[count.index].cidr_blocks
+  direction                 = "EGRESS"
+  protocol                  = each.value.protocol
+  source                    = each.value.cidr_blocks
   source_type               = "CIDR_BLOCK"
   stateless                 = false
+  tcp_options {
+    destination_port_range {
+      max = each.value.to_port
+      min = each.value.from_port
+    }
+    source_port_range {
+      max = each.value.to_port
+      min = each.value.from_port
+    }
   }
+}
