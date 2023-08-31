@@ -4,7 +4,7 @@ locals {
       protocol        = 6
       from_port       = 0
       to_port         = 20200
-      cidr_blocks     =
+      cidr_blocks     = "0.0.0.0/0"
       security_groups = null
       self            = true
     },
