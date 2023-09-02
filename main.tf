@@ -1,14 +1,5 @@
 locals {
   ingress_rules = tomap(flatten([
-    {
-      protocol        = 6
-      from_port       = 0
-      to_port         = 20200
-      cidr_blocks     = "0.0.0.0/0"
-      security_groups = null
-      self            = true
-    },
-    ], [
     for r in var.ingress_rules : {
       protocol        = lookup(r, "protocol", 6)
       from_port       = lookup(r, "port", 0)
@@ -20,14 +11,6 @@ locals {
   ]))
 
   egress_rules = tomap(flatten([
-    {
-      protocol        = 6
-      from_port       = 0
-      to_port         = 20200
-      cidr_blocks     = "0.0.0.0/0"
-      security_groups = null
-    }
-    ], [
     for r in var.egress_rules : {
       protocol        = lookup(r, "protocol", 6)
       from_port       = lookup(r, "port", 0)
