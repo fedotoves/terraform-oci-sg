@@ -1,5 +1,5 @@
 locals {
-  ingress_rules = concat([
+  ingress_rules = flatten(concat([
     {
       protocol        = 6
       from_port       = 0
@@ -17,9 +17,9 @@ locals {
       security_groups = lookup(r, "security_groups", null)
       self            = false
     }
-  ])
+  ]))
 
-  egress_rules = concat([
+  egress_rules = flatten(concat([
     {
       protocol        = 6
       from_port       = 0
@@ -35,7 +35,7 @@ locals {
       cidr_blocks     = lookup(r, "cidr_blocks", "0.0.0.0/0")
       security_groups = lookup(r, "security_groups", null)
     }
-  ])
+  ]))
 }
 
 resource "oci_core_network_security_group" "ocisecuritygroup" {
