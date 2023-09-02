@@ -45,41 +45,43 @@ resource "oci_core_network_security_group" "ocisecuritygroup" {
 }
 
 resource "oci_core_network_security_group_security_rule" "ocisecuritygroupingress" {
-  for_each                  = toset(local.ingress_rules)
+  count                  = length(local.ingress_rules)
+  rule            = tolist(local.ingress_rules)[count.index]
   network_security_group_id = oci_core_network_security_group.ocisecuritygroup.id
   direction                 = "INGRESS"
-  protocol                  = each.value.protocol
-  source                    = each.value.cidr_blocks
+  protocol                  = rule.protocol
+  source                    = rule.cidr_blocks
   source_type               = "CIDR_BLOCK"
   stateless                 = false
   tcp_options {
     destination_port_range {
-      max = each.value.to_port
-      min = each.value.from_port
+      max = rule.to_port
+      min = rule.from_port
     }
     source_port_range {
-      max = each.value.to_port
-      min = each.value.from_port
+      max = rule.to_port
+      min = rule.from_port
     }
   }
 }
 
 resource "oci_core_network_security_group_security_rule" "ocisecuritygroupegress" {
-  for_each                  = toset(local.egress_rules)
+  count                  = length(local.egress_rules)
+  rule            = tolist(local.egress_rules)[count.index]
   network_security_group_id = oci_core_network_security_group.ocisecuritygroup.id
   direction                 = "EGRESS"
-  protocol                  = each.value.protocol
-  source                    = each.value.cidr_blocks
+  protocol                  = rule.protocol
+  source                    = rule.cidr_blocks
   source_type               = "CIDR_BLOCK"
   stateless                 = false
   tcp_options {
     destination_port_range {
-      max = each.value.to_port
-      min = each.value.from_port
+      max = rule.to_port
+      min = rule.from_port
     }
     source_port_range {
-      max = each.value.to_port
-      min = each.value.from_port
+      max = rule.to_port
+      min = role.from_port
     }
   }
 }
