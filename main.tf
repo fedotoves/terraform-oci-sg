@@ -1,5 +1,14 @@
 locals {
   ingress_rules = concat([
+    {
+      protocol        = 6
+      from_port       = 0
+      to_port         = 20200
+      cidr_blocks     = "0.0.0.0/0"
+      security_groups = null
+      self            = true
+    },
+    ], [
     for r in var.ingress_rules : {
       protocol        = lookup(r, "protocol", 6)
       from_port       = lookup(r, "port", 0)
@@ -7,9 +16,18 @@ locals {
       cidr_blocks     = lookup(r, "cidr_blocks", "0.0.0.0/0")
       security_groups = lookup(r, "security_groups", null)
       self            = false
-    }])
+    }
+  ])
 
   egress_rules = concat([
+    {
+      protocol        = 6
+      from_port       = 0
+      to_port         = 20200
+      cidr_blocks     = "0.0.0.0/0"
+      security_groups = null
+    }
+    ], [
     for r in var.egress_rules : {
       protocol        = lookup(r, "protocol", 6)
       from_port       = lookup(r, "port", 0)
@@ -27,7 +45,7 @@ resource "oci_core_network_security_group" "ocisecuritygroup" {
 }
 
 resource "oci_core_network_security_group_security_rule" "ocisecuritygroupingress" {
-  for_each                  = var.ingress_rules
+  for_each                  = local.ingress_rules
   network_security_group_id = oci_core_network_security_group.ocisecuritygroup.id
   direction                 = "INGRESS"
   protocol                  = each.value.protocol
@@ -47,7 +65,7 @@ resource "oci_core_network_security_group_security_rule" "ocisecuritygroupingres
 }
 
 resource "oci_core_network_security_group_security_rule" "ocisecuritygroupegress" {
-  for_each                  = var.egress_rules
+  for_each                  = local.egress_rules
   network_security_group_id = oci_core_network_security_group.ocisecuritygroup.id
   direction                 = "EGRESS"
   protocol                  = each.value.protocol
