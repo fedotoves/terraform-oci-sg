@@ -45,7 +45,7 @@ resource "oci_core_network_security_group" "ocisecuritygroup" {
 }
 
 resource "oci_core_network_security_group_security_rule" "ocisecuritygroupingress" {
-  for_each                  = local.ingress_rules
+  for_each                  = toset(local.ingress_rules)
   network_security_group_id = oci_core_network_security_group.ocisecuritygroup.id
   direction                 = "INGRESS"
   protocol                  = each.value.protocol
@@ -65,7 +65,7 @@ resource "oci_core_network_security_group_security_rule" "ocisecuritygroupingres
 }
 
 resource "oci_core_network_security_group_security_rule" "ocisecuritygroupegress" {
-  for_each                  = local.egress_rules
+  for_each                  = toset(local.egress_rules)
   network_security_group_id = oci_core_network_security_group.ocisecuritygroup.id
   direction                 = "EGRESS"
   protocol                  = each.value.protocol
