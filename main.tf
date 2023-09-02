@@ -1,5 +1,5 @@
 locals {
-  ingress_rules = flatten(concat([
+  ingress_rules = tomap(flatten([
     {
       protocol        = 6
       from_port       = 0
@@ -19,7 +19,7 @@ locals {
     }
   ]))
 
-  egress_rules = flatten(concat([
+  egress_rules = tomap(flatten([
     {
       protocol        = 6
       from_port       = 0
