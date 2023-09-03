@@ -63,11 +63,14 @@ resource "oci_core_network_security_group_security_rule" "ocisecuritygroupingres
     }
   }
 }
-
+#TODO check Oracle terraform docs if they mention
+#destination must be specified for an EGRESS rule
 resource "oci_core_network_security_group_security_rule" "ocisecuritygroupegress" {
   for_each                  = { for rule in local.egress_rules : rule.to_port => rule }
   network_security_group_id = oci_core_network_security_group.ocisecuritygroup.id
   direction                 = "EGRESS"
+  destination = "0.0.0.0/0"
+  destination_type = "CIDR_BLOCK"
   protocol                  = each.value.protocol
   source                    = each.value.cidr_blocks
   source_type               = "CIDR_BLOCK"
