@@ -1,7 +1,7 @@
 locals {
   ingress_rules = concat([
     {
-      protocol        = "all"
+      protocol        = 6
       from_port       = 22
       to_port         = 22
       cidr_blocks     = "0.0.0.0/0"
@@ -21,7 +21,7 @@ locals {
 
   egress_rules = concat([
     {
-      protocol        = "all"
+      protocol        = 6
       from_port       = 1
       to_port         = 20200
       cidr_blocks     = "0.0.0.0/0"
