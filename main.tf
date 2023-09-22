@@ -1,15 +1,7 @@
 locals {
-  ingress_rules = concat([
-    {
-      protocol        = 6
-      from_port       = 22
-      to_port         = 22
-      cidr_blocks     = "0.0.0.0/0"
-      security_groups = null
-      self            = true
-    },
-    ], [
+  ingress_rules = concat( [
     for r in var.ingress_rules : {
+      #to avoid empty values in rules, default values are in each lookup statement
       protocol        = lookup(r, "protocol", 6)
       from_port       = lookup(r, "port", 22)
       to_port         = lookup(r, "port", 22)
@@ -19,15 +11,8 @@ locals {
     }
   ])
 
-  egress_rules = concat([
-    {
-      protocol        = 6
-      from_port       = 1
-      to_port         = 20200
-      cidr_blocks     = "0.0.0.0/0"
-      security_groups = null
-    }
-    ], [
+  egress_rules = concat(
+ [
     for r in var.egress_rules : {
       protocol        = lookup(r, "protocol", 6)
       from_port       = lookup(r, "port", 1)
@@ -63,8 +48,7 @@ resource "oci_core_network_security_group_security_rule" "ocisecuritygroupingres
     }
   }
 }
-#TODO check Oracle terraform docs if they mention
-#destination must be specified for an EGRESS rule
+
 resource "oci_core_network_security_group_security_rule" "ocisecuritygroupegress" {
   for_each                  = { for rule in local.egress_rules : rule.to_port => rule }
   network_security_group_id = oci_core_network_security_group.ocisecuritygroup.id
